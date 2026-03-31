@@ -22,6 +22,7 @@
       --navy-footer: #081522;
       --accent: #00A8FF;
       --accent-light: #00C8FF;
+      --accent-logo: #5297e9;
       --muted: #566475;
       --bg: #F7F9FB;
       --white: #ffffff;
@@ -147,7 +148,7 @@
     }
 
     .front-beyond-highlight {
-      color: var(--accent);
+      color: var(--accent-logo);
     }
 
     /* Back: solid white (no background gradients) */
@@ -164,6 +165,82 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+    }
+
+    .back-top {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 3.25mm;
+      width: 100%;
+    }
+
+    .back-name-block {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Fotografia opcional (verso) — mesma mecânica que photo-embed.js nos cartões de acesso */
+    .visitor-photo.photo-wrap {
+      flex-shrink: 0;
+      margin: 0;
+      width: 14mm;
+      height: 18.67mm;
+      border: 0.35mm solid rgba(13, 27, 42, 0.14);
+      border-radius: 1mm;
+      overflow: hidden;
+      background: #f0f3f7;
+    }
+
+    .visitor-photo .photo-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    .visitor-photo .photo-user-img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      max-width: none;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .visitor-photo .photo-user-img.is-dragging {
+      cursor: grabbing;
+    }
+
+    .visitor-photo .photo-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2mm;
+      font-weight: 500;
+      color: var(--muted);
+      text-align: center;
+      padding: 1.5mm;
+      line-height: 1.35;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    html.card-embed .visitor-photo.card-embed--has-photo .photo-placeholder {
+      display: none;
+    }
+
+    html.card-embed .visitor-photo .photo-viewport {
+      cursor: grab;
+    }
+
+    html.card-embed .visitor-photo .photo-viewport:active {
+      cursor: grabbing;
     }
 
     .back-name {
@@ -198,10 +275,12 @@
       box-shadow: 0 0.35mm 1.2mm rgba(0, 168, 255, 0.15);
     }
 
+    /* Espaço entre cabeçalho (foto + nome) e linha do email em diante */
     .back-contact {
       font-size: 2.5mm;
       line-height: 1.55;
       color: var(--body-sales);
+      margin-top: 3.75mm;
     }
 
     .back-contact a {
@@ -340,6 +419,7 @@
   <link rel="stylesheet" href="cards-export.css" />
   <script src="cards-export.js" defer></script>
   <script src="card-embed-fields.js" defer></script>
+  <script src="photo-embed.js" defer></script>
 </head>
 <body class="card-export-page">
   <div class="card-export-bar" role="toolbar" aria-label="Exportar">
@@ -376,10 +456,19 @@
   <section class="sheet sheet--back" aria-label="Cartão de Visita - verso">
     <div class="back-inner">
       <div>
-        <!-- Substituir nome, cargo e email antes de gerar o PDF -->
-        <div class="back-name" data-card-field="backName">Miguel Figueiredo</div>
-        <div class="back-title" data-card-field="backTitle">CEO</div>
-        <div class="rule-accent" aria-hidden="true"></div>
+        <div class="back-top">
+          <div class="photo-wrap visitor-photo" aria-label="Fotografia">
+            <div class="photo-viewport">
+              <img class="photo-user-img" alt="" decoding="async" />
+              <div class="photo-placeholder">Foto<br />opcional</div>
+            </div>
+          </div>
+          <div class="back-name-block">
+            <div class="back-name" data-card-field="backName">Miguel Figueiredo</div>
+            <div class="back-title" data-card-field="backTitle">CEO</div>
+            <div class="rule-accent" aria-hidden="true"></div>
+          </div>
+        </div>
         <div class="back-contact">
           <div class="back-row">
             <svg class="back-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

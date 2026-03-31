@@ -29,12 +29,37 @@
       min-height: var(--bar-h);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       flex-wrap: wrap;
       gap: 10px 16px;
       padding: 10px 16px;
       background: var(--navy);
       border-bottom: 1px solid rgba(0, 168, 255, 0.25);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .shell-header-tools {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      min-width: 0;
+    }
+    .shell-header-brand {
+      flex-shrink: 0;
+      margin-left: auto;
+      line-height: 0;
+      opacity: 0.95;
+    }
+    .shell-header-brand:hover {
+      opacity: 1;
+    }
+    .shell-header-brand img {
+      display: block;
+      height: 30px;
+      width: auto;
+      max-width: 140px;
+      object-fit: contain;
+      object-position: right center;
     }
     .shell-header label {
       display: inline-flex;
@@ -157,6 +182,32 @@
       border-color: rgba(0, 168, 255, 0.55);
       box-shadow: 0 0 0 2px rgba(0, 168, 255, 0.12);
     }
+    .shell-field input[type="file"] {
+      padding: 6px 0;
+      font-size: 12px;
+      max-width: 100%;
+    }
+    .shell-field .shell-btn-secondary {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.08);
+      color: #e8eef4;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .shell-field .shell-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.14);
+    }
+    .shell-photo-hint {
+      margin: -4px 0 10px;
+      font-size: 10px;
+      line-height: 1.4;
+      color: #8a9aac;
+    }
     .shell-form-panel[hidden] {
       display: none !important;
     }
@@ -215,23 +266,34 @@
     role="toolbar"
     aria-label="Pré-visualização e exportação"
   >
-    <label for="layout-pick">
-      Layout
-      <select id="layout-pick" name="layout" aria-label="Tipo de cartão">
-        <option value="vertical">Cartão de Acesso Vertical</option>
-        <option value="horizontal">Cartão de Acesso Horizontal</option>
-        <option value="visitor">Cartão de Visita</option>
-      </select>
-    </label>
-    <button type="button" id="btn-print">Imprimir</button>
-    <a class="shell-pdf" id="lnk-pdf" href="access-card-vertical-print.pdf" download>Descarregar PDF</a>
+    <div class="shell-header-tools">
+      <label for="layout-pick">
+        Layout
+        <select id="layout-pick" name="layout" aria-label="Tipo de cartão">
+          <option value="vertical">Cartão de Acesso Vertical</option>
+          <option value="horizontal">Cartão de Acesso Horizontal</option>
+          <option value="visitor">Cartão de Visita</option>
+        </select>
+      </label>
+      <button type="button" id="btn-print">Imprimir</button>
+      <a class="shell-pdf" id="lnk-pdf" href="access-card-vertical-print.pdf" download>Descarregar PDF</a>
+      <a
+        class="shell-psd"
+        id="lnk-psd"
+        href="access-card-vertical-300dpi.psd"
+        download
+        title="Gere o ficheiro com: python export_cards_to_psd.py"
+      >Descarregar PSD</a>
+    </div>
     <a
-      class="shell-psd"
-      id="lnk-psd"
-      href="access-card-vertical-300dpi.psd"
-      download
-      title="Gere o ficheiro com: python export_cards_to_psd.py"
-    >Descarregar PSD</a>
+      class="shell-header-brand"
+      href="https://www.voa.aero"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="VOA — site"
+    >
+      <img src="logo.png" alt="VOA" width="160" height="40" decoding="async" />
+    </a>
   </header>
 
   <div class="shell-main">
@@ -269,6 +331,14 @@
           <label for="fld-bandMark">Nota na faixa</label>
           <input type="text" id="fld-bandMark" name="bandMark" autocomplete="off" />
         </div>
+        <div class="shell-field">
+          <label for="fld-access-photo">Fotografia (frente)</label>
+          <input type="file" id="fld-access-photo" name="accessPhoto" accept="image/*" />
+          <button type="button" class="shell-btn-secondary" id="btn-access-photo-clear">Remover foto</button>
+        </div>
+        <p class="shell-photo-hint" id="shell-access-photo-hint">
+          Na pré-visualização: arrastar para enquadrar, scroll para zoom (só com foto carregada). Vertical e horizontal guardam fotos separadas.
+        </p>
       </div>
 
       <div class="shell-form-panel" id="shell-form-visitor" hidden>
@@ -300,6 +370,14 @@
           <label for="fld-webUrl">Website (URL ou domínio)</label>
           <input type="text" id="fld-webUrl" name="webUrl" autocomplete="url" placeholder="https://www.voa.aero" />
         </div>
+        <div class="shell-field">
+          <label for="fld-visitor-photo">Fotografia (verso)</label>
+          <input type="file" id="fld-visitor-photo" name="visitorPhoto" accept="image/*" />
+          <button type="button" class="shell-btn-secondary" id="btn-visitor-photo-clear">Remover foto</button>
+        </div>
+        <p class="shell-photo-hint" id="shell-photo-hint">
+          Na pré-visualização: arrastar para enquadrar, scroll para zoom (só com foto carregada).
+        </p>
       </div>
     </aside>
 
@@ -388,8 +466,12 @@
       var formAccess = document.getElementById("shell-form-access");
       var formVisitor = document.getElementById("shell-form-visitor");
 
-      var accessInputs = formAccess.querySelectorAll("input");
-      var visitorInputs = formVisitor.querySelectorAll("input, textarea");
+      var accessInputs = formAccess.querySelectorAll("input:not([type=file])");
+      var visitorInputs = formVisitor.querySelectorAll("input:not([type=file]), textarea");
+      var visitorPhotoInput = document.getElementById("fld-visitor-photo");
+      var visitorPhotoClear = document.getElementById("btn-visitor-photo-clear");
+      var accessPhotoInput = document.getElementById("fld-access-photo");
+      var accessPhotoClear = document.getElementById("btn-access-photo-clear");
 
       function loadAllStored() {
         try {
@@ -453,6 +535,133 @@
           }
         }
         return base;
+      }
+
+      function getMergedVisitorPhoto() {
+        var stored = loadAllStored();
+        var p = stored.visitorPhoto;
+        var out = {
+          imageDataUrl: "",
+          panX: 0,
+          panY: 0,
+          zoom: 1,
+        };
+        if (p && typeof p === "object") {
+          if (p.imageDataUrl != null) out.imageDataUrl = String(p.imageDataUrl);
+          if (p.panX != null) out.panX = Number(p.panX) || 0;
+          if (p.panY != null) out.panY = Number(p.panY) || 0;
+          if (p.zoom != null) out.zoom = Number(p.zoom) || 1;
+        }
+        return out;
+      }
+
+      function saveVisitorPhotoState(state) {
+        try {
+          var all = loadAllStored();
+          all.visitorPhoto = state;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        } catch (e) {}
+      }
+
+      function accessPhotoStorageKey(layoutKey) {
+        return layoutKey === "horizontal" ? "accessPhotoHorizontal" : "accessPhotoVertical";
+      }
+
+      function getAccessPhotoState(layoutKey) {
+        var stored = loadAllStored();
+        var p = stored[accessPhotoStorageKey(layoutKey)];
+        var out = {
+          imageDataUrl: "",
+          panX: 0,
+          panY: 0,
+          zoom: 1,
+        };
+        if (p && typeof p === "object") {
+          if (p.imageDataUrl != null) out.imageDataUrl = String(p.imageDataUrl);
+          if (p.panX != null) out.panX = Number(p.panX) || 0;
+          if (p.panY != null) out.panY = Number(p.panY) || 0;
+          if (p.zoom != null) out.zoom = Number(p.zoom) || 1;
+        }
+        return out;
+      }
+
+      function saveAccessPhotoState(layoutKey, state) {
+        try {
+          var all = loadAllStored();
+          all[accessPhotoStorageKey(layoutKey)] = state;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        } catch (e) {}
+      }
+
+      function dataUrlFromFile(file, callback) {
+        var reader = new FileReader();
+        reader.onload = function () {
+          var result = reader.result;
+          if (typeof result !== "string") {
+            callback("");
+            return;
+          }
+          var img = new Image();
+          img.onload = function () {
+            var maxSide = 1200;
+            var w = img.naturalWidth;
+            var h = img.naturalHeight;
+            if (!w || !h) {
+              callback(result);
+              return;
+            }
+            var scale = Math.min(1, maxSide / Math.max(w, h));
+            var tw = Math.max(1, Math.round(w * scale));
+            var th = Math.max(1, Math.round(h * scale));
+            var canvas = document.createElement("canvas");
+            canvas.width = tw;
+            canvas.height = th;
+            var ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, tw, th);
+              try {
+                callback(canvas.toDataURL("image/jpeg", 0.9));
+                return;
+              } catch (err) {}
+            }
+            callback(result);
+          };
+          img.onerror = function () {
+            callback(result);
+          };
+          img.src = result;
+        };
+        reader.onerror = function () {
+          callback("");
+        };
+        reader.readAsDataURL(file);
+      }
+
+      function pushPhotoInit() {
+        var key = pick.value;
+        var p;
+        if (key === "visitor") {
+          p = getMergedVisitorPhoto();
+        } else if (key === "vertical" || key === "horizontal") {
+          p = getAccessPhotoState(key);
+        } else {
+          return;
+        }
+        try {
+          if (!frame.contentWindow) return;
+          frame.contentWindow.postMessage(
+            {
+              source: "voa-card-shell",
+              type: "photo-init",
+              layoutKey: key,
+              imageDataUrl: p.imageDataUrl || null,
+              panX: p.panX,
+              panY: p.panY,
+              zoom: p.zoom,
+            },
+            "*"
+          );
+        } catch (e) {}
       }
 
       function formAccessToObject() {
@@ -581,7 +790,100 @@
       });
 
       frame.addEventListener("load", function () {
-        setTimeout(pushFieldsToFrame, 0);
+        setTimeout(function () {
+          pushFieldsToFrame();
+          pushPhotoInit();
+        }, 0);
+      });
+
+      window.addEventListener("message", function (ev) {
+        var d = ev.data;
+        if (!d || d.source !== "voa-card-preview") return;
+        if (d.type !== "photo-update") return;
+        var lk = d.layoutKey;
+        if (lk === "visitor") {
+          var pv = getMergedVisitorPhoto();
+          saveVisitorPhotoState({
+            imageDataUrl: pv.imageDataUrl,
+            panX: d.panX != null ? d.panX : pv.panX,
+            panY: d.panY != null ? d.panY : pv.panY,
+            zoom: d.zoom != null ? d.zoom : pv.zoom,
+          });
+        } else if (lk === "vertical" || lk === "horizontal") {
+          var pa = getAccessPhotoState(lk);
+          saveAccessPhotoState(lk, {
+            imageDataUrl: pa.imageDataUrl,
+            panX: d.panX != null ? d.panX : pa.panX,
+            panY: d.panY != null ? d.panY : pa.panY,
+            zoom: d.zoom != null ? d.zoom : pa.zoom,
+          });
+        }
+      });
+
+      visitorPhotoInput.addEventListener("change", function (e) {
+        var f = e.target.files && e.target.files[0];
+        if (!f) return;
+        if (!/^image\//.test(f.type)) {
+          window.alert("Escolha um ficheiro de imagem.");
+          e.target.value = "";
+          return;
+        }
+        dataUrlFromFile(f, function (dataUrl) {
+          if (!dataUrl) return;
+          saveVisitorPhotoState({
+            imageDataUrl: dataUrl,
+            panX: 0,
+            panY: 0,
+            zoom: 1,
+          });
+          pushPhotoInit();
+        });
+      });
+
+      visitorPhotoClear.addEventListener("click", function () {
+        visitorPhotoInput.value = "";
+        saveVisitorPhotoState({
+          imageDataUrl: "",
+          panX: 0,
+          panY: 0,
+          zoom: 1,
+        });
+        pushPhotoInit();
+      });
+
+      accessPhotoInput.addEventListener("change", function (e) {
+        var f = e.target.files && e.target.files[0];
+        if (!f) return;
+        var lk = pick.value;
+        if (lk !== "vertical" && lk !== "horizontal") return;
+        if (!/^image\//.test(f.type)) {
+          window.alert("Escolha um ficheiro de imagem.");
+          e.target.value = "";
+          return;
+        }
+        dataUrlFromFile(f, function (dataUrl) {
+          if (!dataUrl) return;
+          saveAccessPhotoState(lk, {
+            imageDataUrl: dataUrl,
+            panX: 0,
+            panY: 0,
+            zoom: 1,
+          });
+          pushPhotoInit();
+        });
+      });
+
+      accessPhotoClear.addEventListener("click", function () {
+        var lk = pick.value;
+        if (lk !== "vertical" && lk !== "horizontal") return;
+        accessPhotoInput.value = "";
+        saveAccessPhotoState(lk, {
+          imageDataUrl: "",
+          panX: 0,
+          panY: 0,
+          zoom: 1,
+        });
+        pushPhotoInit();
       });
 
       accessInputs.forEach(function (el) {
@@ -605,7 +907,10 @@
       applyQueryLayout();
       showFormForLayout(pick.value);
       syncFromUi(false);
-      setTimeout(pushFieldsToFrame, 400);
+      setTimeout(function () {
+        pushFieldsToFrame();
+        pushPhotoInit();
+      }, 400);
     })();
   </script>
 </body>
