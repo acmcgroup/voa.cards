@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <script>
+    document.documentElement.classList.toggle("card-embed", /[?&]embed=1(?:&|$)/.test(location.search));
+  </script>
+  <meta charset="UTF-8" />
+  <title>VOA.aero  -  Cartão de acesso horizontal (impressão)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    /*
+      HORIZONTAL · Sangria 10 mm · Zona segura 17 mm da borda (10 bleed + 7 mm dentro do corte)
+      Folha: 105,6 × 74 mm · Trim: 85,6 × 54 mm
+    */
+    :root {
+      --navy: #0d1b2a;
+      --navy-footer: #081522;
+      --accent: #00a8ff;
+      --accent-light: #00c8ff;
+      --muted: #566475;
+      --bg: #f7f9fb;
+      --white: #ffffff;
+      --bleed: 10mm;
+      --edge-inset: 17mm;
+      --print-w: 105.6mm;
+      --print-h: 74mm;
+      --top-rule-h: 2.2mm;
+      --inner-h: 71.8mm;
+      --safe-inner-w: 71.6mm;
+    }
+
+    @page {
+      size: 105.6mm 74mm;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      width: var(--print-w);
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background: #888;
+      width: var(--print-w);
+    }
+
+    .sheet {
+      width: var(--print-w);
+      height: var(--print-h);
+      min-width: var(--print-w);
+      max-width: var(--print-w);
+      min-height: var(--print-h);
+      max-height: var(--print-h);
+      position: relative;
+      page-break-after: always;
+      overflow: hidden;
+      background: var(--white);
+      color: var(--navy);
+    }
+
+    .sheet:last-child {
+      page-break-after: auto;
+    }
+
+    .trim-box {
+      position: absolute;
+      inset: var(--bleed);
+      box-sizing: border-box;
+      border: 0.12mm dashed rgba(35, 35, 35, 0.5);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .top-rule {
+      position: relative;
+      z-index: 2;
+      height: var(--top-rule-h);
+      flex-shrink: 0;
+      background: linear-gradient(
+        90deg,
+        var(--navy) 0%,
+        var(--navy) 38%,
+        var(--accent) 38%,
+        var(--accent-light) 68%,
+        rgba(0, 168, 255, 0.35) 100%
+      );
+    }
+
+    .sheet--front {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .inner {
+      position: relative;
+      z-index: 2;
+      width: var(--print-w);
+      height: var(--inner-h);
+      min-height: var(--inner-h);
+      max-height: var(--inner-h);
+      padding: 3mm var(--edge-inset) 0;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      flex-shrink: 0;
+    }
+
+    .front-row {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 3mm;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+
+    .front-row-left {
+      flex: 1 1 auto;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .brand-block {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8mm;
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .brand-logo img {
+      display: block;
+      height: 6mm;
+      width: auto;
+      max-width: 44mm;
+      object-fit: contain;
+    }
+
+    .brand-tagline {
+      font-size: 1.95mm;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .brand-sub {
+      font-size: 1.85mm;
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    .role-block {
+      margin-top: 2mm;
+      text-align: left;
+    }
+
+    .role {
+      font-size: 5.2mm;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+      color: var(--navy);
+    }
+
+    .card-name {
+      margin-top: 1mm;
+      font-size: 2.85mm;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .photo-wrap {
+      flex-shrink: 0;
+      width: 20mm;
+      height: 26.67mm;
+      border: 0.35mm solid rgba(13, 27, 42, 0.12);
+      border-radius: 1mm;
+      overflow: hidden;
+      background: var(--bg);
+    }
+
+    .photo-wrap img {
+      width: 20mm;
+      height: 26.67mm;
+      object-fit: cover;
+      object-position: center top;
+      display: block;
+    }
+
+    .photo-placeholder {
+      width: 20mm;
+      height: 26.67mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75mm;
+      color: var(--muted);
+      text-align: center;
+      padding: 1.2mm;
+      line-height: 1.35;
+    }
+
+    .data-band {
+      margin-top: auto;
+      margin-left: calc(-1 * var(--edge-inset));
+      margin-right: calc(-1 * var(--edge-inset));
+      padding: 2.4mm var(--edge-inset) 2.6mm;
+      background: linear-gradient(
+        165deg,
+        var(--navy) 0%,
+        var(--navy-footer) 55%,
+        #0a1520 100%
+      );
+      position: relative;
+    }
+
+    .data-band::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 0.35mm;
+      background: linear-gradient(
+        90deg,
+        var(--accent-light) 0%,
+        var(--accent) 40%,
+        transparent 88%
+      );
+      opacity: 0.9;
+    }
+
+    .data-grid {
+      display: grid;
+      gap: 1.2mm;
+    }
+
+    .data-row {
+      display: grid;
+      grid-template-columns: 13mm 58.6mm;
+      align-items: stretch;
+      gap: 1.2mm;
+      font-size: 2.05mm;
+    }
+
+    .data-label {
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.5);
+      display: flex;
+      align-items: center;
+      padding: 0.45mm 0;
+      font-size: 1.75mm;
+    }
+
+    .data-value {
+      background: rgba(255, 255, 255, 0.97);
+      color: var(--navy);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      padding: 1mm 1.5mm;
+      border-radius: 0.65mm;
+      border: 0.2mm solid rgba(0, 168, 255, 0.25);
+      box-shadow: 0 0.25mm 0.8mm rgba(0, 0, 0, 0.1);
+      min-height: 4.8mm;
+      display: flex;
+      align-items: center;
+      font-size: 1.95mm;
+      word-break: break-word;
+    }
+
+    .data-value--mono {
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.05em;
+    }
+
+    .band-footer {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2mm;
+      margin-top: 1.6mm;
+      padding-top: 1.4mm;
+      border-top: 0.25mm solid rgba(255, 255, 255, 0.1);
+    }
+
+    .band-site {
+      font-size: 2mm;
+      font-weight: 600;
+      color: var(--accent-light);
+      letter-spacing: 0.03em;
+    }
+
+    .band-mark {
+      font-size: 1.65mm;
+      color: rgba(255, 255, 255, 0.38);
+      font-weight: 500;
+      line-height: 1.25;
+      text-align: right;
+    }
+
+    .sheet--back {
+      position: relative;
+      background: var(--navy);
+      color: var(--white);
+    }
+
+    .sheet--back::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 130% 85% at 100% 0%, rgba(0, 168, 255, 0.28) 0%, transparent 58%),
+        radial-gradient(ellipse 95% 75% at 0% 100%, rgba(0, 200, 255, 0.14) 0%, transparent 52%),
+        radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 65%),
+        linear-gradient(155deg, var(--navy) 0%, var(--navy-footer) 100%);
+      pointer-events: none;
+    }
+
+    .sheet--back .trim-box {
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .back-inner {
+      position: relative;
+      z-index: 2;
+      width: var(--print-w);
+      height: var(--print-h);
+      min-height: var(--print-h);
+      max-height: var(--print-h);
+      padding: var(--edge-inset);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-logo {
+      display: block;
+      height: 11mm;
+      width: auto;
+      max-width: 76mm;
+      object-fit: contain;
+      object-position: center center;
+      filter: drop-shadow(0 0.12mm 0.45mm rgba(0, 0, 0, 0.5))
+        drop-shadow(0 0 0.35mm rgba(0, 168, 255, 0.3));
+    }
+
+    @media print {
+      html,
+      body {
+        width: 105.6mm;
+        margin: 0;
+        padding: 0;
+        background: #fff;
+      }
+
+      body {
+        display: block;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .sheet {
+        box-shadow: none;
+        margin: 0;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .sheet:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+
+      .trim-box {
+        border-color: rgba(0, 0, 0, 0.4);
+      }
+
+      .sheet--back .trim-box {
+        border-color: rgba(255, 255, 255, 0.28);
+      }
+    }
+
+    @media screen {
+      .trim-box {
+        opacity: 0.4;
+      }
+
+      html {
+        width: auto;
+        min-height: 100%;
+      }
+
+      body {
+        width: auto;
+        min-height: 100vh;
+        padding: 10mm;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        align-items: center;
+        justify-content: safe center;
+        gap: 8mm;
+        box-sizing: border-box;
+        overflow-x: auto;
+      }
+
+      .sheet {
+        width: 105.6mm;
+        height: 74mm;
+        min-width: 105.6mm;
+        max-width: 105.6mm;
+        min-height: 74mm;
+        max-height: 74mm;
+        flex-shrink: 0;
+        box-shadow: 0 3mm 10mm rgba(13, 27, 42, 0.25);
+        margin-bottom: 0;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="cards-export.css" />
+  <script src="cards-export.js" defer></script>
+</head>
+<body class="card-export-page">
+  <div class="card-export-bar" role="toolbar" aria-label="Exportar">
+    <span class="card-export-title">Cartão de acesso · horizontal</span>
+    <button type="button" class="card-export-print">Imprimir</button>
+    <a class="card-export-pdf" href="access-card-horizontal-print.pdf" download>Descarregar PDF</a>
+    <a
+      class="card-export-psd"
+      href="access-card-horizontal-300dpi.psd"
+      download
+      title="Gere o ficheiro com: python export_cards_to_psd.py"
+    >Descarregar PSD</a>
+  </div>
+  <section class="sheet sheet--front" aria-label="Cartão de acesso horizontal  -  frente">
+    <div class="trim-box" aria-hidden="true"></div>
+    <div class="top-rule" aria-hidden="true"></div>
+    <div class="inner">
+      <div class="front-row">
+        <div class="front-row-left">
+          <div class="brand-block">
+            <div class="brand-logo">
+              <img
+                src="logo.png"
+                alt="VOA.aero"
+                width="160"
+                height="40"
+                decoding="async"
+              />
+            </div>
+            <div class="brand-tagline">Acesso às instalações</div>
+            <div class="brand-sub">Beyond simulation.</div>
+          </div>
+          <div class="role-block">
+            <div class="role">Developer</div>
+            <div class="card-name">Rui Pinto</div>
+          </div>
+        </div>
+        <div class="photo-wrap" aria-label="Fotografia">
+          <div class="photo-placeholder">
+            Foto<br />3 × 4 cm
+          </div>
+        </div>
+      </div>
+
+      <div class="data-band">
+        <div class="data-grid">
+          <div class="data-row">
+            <span class="data-label">Nome</span>
+            <span class="data-value">RUI PINTO</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">ID / N.º</span>
+            <span class="data-value data-value--mono">VOA-2026-00000</span>
+          </div>
+          <div class="data-row">
+            <span class="data-label">Válido até</span>
+            <span class="data-value">31 de dezembro de 2026</span>
+          </div>
+        </div>
+        <div class="band-footer">
+          <span class="band-site">www.voa.aero</span>
+          <span class="band-mark">Cartão de acesso · não transferível</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sheet sheet--back" aria-label="Cartão de acesso horizontal  -  verso">
+    <div class="trim-box" aria-hidden="true"></div>
+    <div class="back-inner">
+      <img
+        class="back-logo"
+        src="logo.png"
+        alt="VOA.aero"
+        width="160"
+        height="40"
+        decoding="async"
+      />
+    </div>
+  </section>
+</body>
+</html>

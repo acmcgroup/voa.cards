@@ -1,0 +1,87 @@
+/* Barra de exportação  -  oculta na impressão e no PDF (media print) */
+.card-export-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 10px 16px;
+  background: #0d1b2a;
+  color: #e8eef4;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(0, 168, 255, 0.25);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.card-export-bar .card-export-title {
+  font-weight: 600;
+  margin-right: auto;
+  letter-spacing: 0.02em;
+}
+
+.card-export-bar button {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: #00a8ff;
+  color: #0d1b2a;
+}
+
+.card-export-bar button:hover {
+  filter: brightness(1.08);
+}
+
+.card-export-bar a.card-export-pdf,
+.card-export-bar a.card-export-psd {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: none;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-export-bar a.card-export-pdf:hover,
+.card-export-bar a.card-export-psd:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* Espaço sob a barra fixa (só ecrã). Combinar com body { padding: 12mm } etc. */
+@media screen {
+  body.card-export-page {
+    padding-top: 52px;
+  }
+}
+
+/* Incluído em index.html via iframe (?embed=1)  -  sem segunda barra */
+html.card-embed .card-export-bar {
+  display: none !important;
+}
+
+@media screen {
+  html.card-embed body.card-export-page {
+    padding-top: 0 !important;
+  }
+}
+
+@media print {
+  .card-export-bar {
+    display: none !important;
+  }
+
+  body.card-export-page {
+    padding-top: 0 !important;
+  }
+}

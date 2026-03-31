@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VOA.aero - Cartões (pré-visualização)</title>
+  <style>
+    :root {
+      --bar-h: 52px;
+      --navy: #0d1b2a;
+      --accent: #00a8ff;
+      /* Painel de medidas: abaixo do header, por cima do iframe, sem empurrar layout */
+      --shell-specs-z: 100;
+      --shell-header-z: 10000;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-size: 14px;
+      background: #2a3441;
+      color: #e8eef4;
+    }
+    .shell-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: var(--shell-header-z);
+      min-height: var(--bar-h);
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px 16px;
+      padding: 10px 16px;
+      background: var(--navy);
+      border-bottom: 1px solid rgba(0, 168, 255, 0.25);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    .shell-header label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+    .shell-header select {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: inherit;
+      min-width: 220px;
+    }
+    .shell-header select option {
+      background: var(--navy);
+      color: #fff;
+    }
+    .shell-header button {
+      padding: 8px 14px;
+      border-radius: 6px;
+      border: none;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--accent);
+      color: #0d1b2a;
+    }
+    .shell-header button:hover {
+      filter: brightness(1.08);
+    }
+    .shell-header a.shell-pdf,
+    .shell-header a.shell-psd {
+      display: inline-flex;
+      align-items: center;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font: inherit;
+      font-weight: 600;
+      text-decoration: none;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .shell-header a.shell-pdf:hover,
+    .shell-header a.shell-psd:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Texto das medidas sobreposto ao preview: sem fundo; cliques passam ao iframe */
+    .shell-specs-panel {
+      position: fixed;
+      top: var(--bar-h);
+      left: 0;
+      right: 0;
+      z-index: var(--shell-specs-z);
+      padding: 8px 16px 10px;
+      font-size: 11px;
+      line-height: 1.45;
+      color: #c5d4e0;
+      pointer-events: none;
+    }
+    .shell-specs-row {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+    .shell-specs-row + .shell-specs-row {
+      margin-top: 3px;
+    }
+
+    .shell-frame-wrap {
+      padding-top: var(--bar-h);
+      min-height: 100vh;
+    }
+    #preview-frame {
+      position: relative;
+      z-index: 0;
+      width: 100%;
+      height: calc(100vh - var(--bar-h));
+      min-height: 480px;
+      border: 0;
+      display: block;
+      background: #1a222c;
+    }
+    @media print {
+      .shell-header,
+      .shell-specs-panel {
+        display: none !important;
+      }
+      .shell-frame-wrap { padding-top: 0; }
+      #preview-frame { height: 100vh; min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+  <header
+    class="shell-header"
+    id="shell-header"
+    role="toolbar"
+    aria-label="Pré-visualização e exportação"
+  >
+    <label>
+      Layout
+      <select id="layout-pick" aria-label="Layout do cartão">
+        <option value="vertical">Acesso - vertical</option>
+        <option value="horizontal">Acesso - horizontal</option>
+        <option value="visitor">Visitante</option>
+      </select>
+    </label>
+    <button type="button" id="btn-print">Imprimir</button>
+    <a class="shell-pdf" id="lnk-pdf" href="access-card-vertical-print.pdf" download>Descarregar PDF</a>
+    <a
+      class="shell-psd"
+      id="lnk-psd"
+      href="access-card-vertical-300dpi.psd"
+      download
+      title="Gere o ficheiro com: python export_cards_to_psd.py"
+    >Descarregar PSD</a>
+  </header>
+
+  <section
+    class="shell-specs-panel"
+    id="shell-specs-panel"
+    aria-label="Medidas de impressão do layout selecionado"
+    role="region"
+  ></section>
+
+  <div class="shell-frame-wrap">
+    <iframe
+      id="preview-frame"
+      title="Pré-visualização do cartão"
+      src="access-card-vertical.html?embed=1"
+    ></iframe>
+  </div>
+  <script>
+    (function () {
+      var SPEC_ROWS = {
+        vertical: [
+          "Folha (PDF / @page): 74 × 105,6 mm",
+          "Sangria (bleed): 10 mm por lado",
+          "Área de corte (trim): 54 × 85,6 mm",
+          "Zona segura: 17 mm desde a borda da folha (7 mm para dentro do corte)",
+          "Área útil (largura): ~40 mm entre margens internas",
+        ],
+        horizontal: [
+          "Folha (PDF / @page): 105,6 × 74 mm",
+          "Sangria (bleed): 10 mm por lado",
+          "Área de corte (trim): 85,6 × 54 mm",
+          "Zona segura: 17 mm desde a borda da folha (7 mm para dentro do corte)",
+          "Área útil (largura): ~71,6 mm entre margens internas",
+        ],
+        visitor: [
+          "Folha (PDF / @page): 105 × 75 mm (frente e verso)",
+          "Sangria (bleed): 10 mm por lado",
+          "Área de corte (trim): 85 × 55 mm (ISO)",
+          "Zona segura: 17 mm desde a borda da folha (7 mm para dentro do corte)",
+          "Área útil (aprox.): ~71 × 41 mm",
+        ],
+      };
+
+      var ROUTES = {
+        vertical: {
+          html: "access-card-vertical.html?embed=1",
+          pdf: "access-card-vertical-print.pdf",
+          psd: "access-card-vertical-300dpi.psd",
+        },
+        horizontal: {
+          html: "access-card-horizontal.html?embed=1",
+          pdf: "access-card-horizontal-print.pdf",
+          psd: "access-card-horizontal-300dpi.psd",
+        },
+        visitor: {
+          html: "visitor-card.html?embed=1",
+          pdf: "visitor-card-print.pdf",
+          psd: "visitor-card-300dpi.psd",
+        },
+      };
+
+      var specsPanel = document.getElementById("shell-specs-panel");
+      var pick = document.getElementById("layout-pick");
+      var frame = document.getElementById("preview-frame");
+      var lnk = document.getElementById("lnk-pdf");
+      var lnkPsd = document.getElementById("lnk-psd");
+      var btnPrint = document.getElementById("btn-print");
+
+      function renderSpecs(key) {
+        var rows = SPEC_ROWS[key];
+        specsPanel.textContent = "";
+        for (var i = 0; i < rows.length; i++) {
+          var row = document.createElement("p");
+          row.className = "shell-specs-row";
+          row.textContent = rows[i];
+          specsPanel.appendChild(row);
+        }
+      }
+
+      function applyQueryLayout() {
+        var q = new URLSearchParams(window.location.search).get("layout");
+        if (q && ROUTES[q]) pick.value = q;
+      }
+
+      function syncFromUi(pushHistory) {
+        var key = pick.value;
+        var r = ROUTES[key];
+        frame.src = r.html;
+        lnk.href = r.pdf;
+        lnk.setAttribute("download", r.pdf);
+        lnkPsd.href = r.psd;
+        lnkPsd.setAttribute("download", r.psd);
+        renderSpecs(key);
+        if (pushHistory) {
+          var url = new URL(window.location.href);
+          url.searchParams.set("layout", key);
+          window.history.replaceState({}, "", url);
+        }
+      }
+
+      pick.addEventListener("change", function () {
+        syncFromUi(true);
+      });
+      btnPrint.addEventListener("click", function () {
+        try {
+          frame.contentWindow.focus();
+          frame.contentWindow.print();
+        } catch (e) {
+          window.alert("Não foi possível imprimir. Abra este index.html a partir da pasta dos cartões.");
+        }
+      });
+
+      applyQueryLayout();
+      syncFromUi(false);
+    })();
+  </script>
+</body>
+</html>
