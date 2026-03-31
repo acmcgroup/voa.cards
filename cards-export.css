@@ -71,8 +71,23 @@ html.card-embed .card-export-bar {
 }
 
 @media screen {
+  /*
+   * Pré-visualização no index (?embed=1): como o cartão de visita — ordem = DOM
+   * (capa / lado escuro primeiro nos acessos; dados a seguir). Sem flex order.
+   */
   html.card-embed body.card-export-page {
-    padding-top: 0 !important;
+    width: auto !important;
+    min-height: 100vh !important;
+    padding: 12mm !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    align-content: center !important;
+    justify-content: safe center !important;
+    gap: 8mm !important;
+    box-sizing: border-box !important;
+    overflow-x: hidden !important;
   }
 
   /* Pré-visualização no index: sem cor própria — vê-se o fundo da página pai */
@@ -90,4 +105,35 @@ html.card-embed .card-export-bar {
   body.card-export-page {
     padding-top: 0 !important;
   }
+
+  /* Etiquetas Front/Back da pré-visualização — nunca no papel nem nos PDFs */
+  .card-embed-face-tag {
+    display: none !important;
+  }
+}
+
+/* Só no ecrã com ?embed=1 — informativo por cima de cada cartão */
+.card-embed-preview-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.card-embed-face-tag {
+  display: none;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(13, 27, 42, 0.55);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  user-select: none;
+  pointer-events: none;
+}
+
+html.card-embed .card-embed-face-tag {
+  display: block;
 }

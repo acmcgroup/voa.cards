@@ -204,9 +204,10 @@ def _build_psd(
         _rgba_to_psd_image("Guides  -  trim (10mm bleed)", np.array(_guides_rgba(h, w, bleed))),
     ]
 
+    # Ordem: capa (frente) primeiro, informação (verso) a seguir — alinhado ao HTML e ao PDF
     root = [
-        Group(name="Back", closed=False, layers=back_layers),
         Group(name="Front", closed=False, layers=front_layers),
+        Group(name="Back", closed=False, layers=back_layers),
     ]
 
     psd = nested_layers_to_psd(

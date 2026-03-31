@@ -332,12 +332,8 @@
           <input type="text" id="fld-brandSub" name="brandSub" autocomplete="off" />
         </div>
         <div class="shell-field">
-          <label for="fld-role">Função / cargo (lado claro)</label>
+          <label for="fld-role">Função / cargo (faixa)</label>
           <input type="text" id="fld-role" name="role" autocomplete="organization-title" />
-        </div>
-        <div class="shell-field">
-          <label for="fld-cardName">Nome (lado claro)</label>
-          <input type="text" id="fld-cardName" name="cardName" autocomplete="name" />
         </div>
         <div class="shell-field">
           <label for="fld-bandUpperName">Nome na faixa (maiúsculas)</label>
@@ -477,7 +473,6 @@
         access: {
           brandSub: "Beyond simulation.",
           role: "Developer",
-          cardName: "Rui Pinto",
           bandUpperName: "RUI PINTO",
           idNumber: "VOA-2026-00000",
           bandSite: "www.voa.aero",
@@ -705,7 +700,6 @@
         return {
           brandSub: document.getElementById("fld-brandSub").value,
           role: document.getElementById("fld-role").value,
-          cardName: document.getElementById("fld-cardName").value,
           bandUpperName: document.getElementById("fld-bandUpperName").value,
           idNumber: document.getElementById("fld-idNumber").value,
           bandSite: document.getElementById("fld-bandSite").value,
@@ -728,7 +722,6 @@
       function applyAccessToForm(obj) {
         document.getElementById("fld-brandSub").value = obj.brandSub || "";
         document.getElementById("fld-role").value = obj.role || "";
-        document.getElementById("fld-cardName").value = obj.cardName || "";
         document.getElementById("fld-bandUpperName").value = obj.bandUpperName || "";
         document.getElementById("fld-idNumber").value = obj.idNumber || "";
         document.getElementById("fld-bandSite").value = obj.bandSite || "";

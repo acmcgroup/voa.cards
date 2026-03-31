@@ -62,21 +62,22 @@
       overflow: hidden;
     }
 
-    .sheet:last-child {
+    .card-embed-preview-unit:last-child .sheet {
       page-break-after: auto;
     }
 
+    /* Frente escura → traço claro; verso claro → traço escuro */
     .trim-box {
       position: absolute;
       inset: 10mm;
       box-sizing: border-box;
-      border: 0.12mm dashed rgba(255, 255, 255, 0.28);
+      border: 0.12mm dashed rgba(255, 255, 255, 0.82);
       pointer-events: none;
       z-index: var(--trim-box-z);
     }
 
     .sheet--back .trim-box {
-      border-color: rgba(35, 35, 35, 0.45);
+      border-color: rgba(13, 27, 42, 0.64);
       z-index: var(--trim-box-z);
     }
 
@@ -354,25 +355,32 @@
         break-after: page;
       }
 
-      .sheet:last-child {
+      .card-embed-preview-unit:last-child .sheet {
         page-break-after: auto;
         break-after: auto;
       }
 
-      .trim-box {
-        border-color: rgba(0, 0, 0, 0.4);
+      .sheet--front .trim-box {
+        border-color: rgba(255, 255, 255, 0.88);
         z-index: var(--trim-box-z);
       }
 
       .sheet--back .trim-box {
-        border-color: rgba(35, 35, 35, 0.45);
+        border-color: rgba(13, 27, 42, 0.72);
         z-index: var(--trim-box-z);
       }
     }
 
     @media screen {
-      .trim-box {
-        opacity: 0.4;
+      .sheet--front .trim-box {
+        border-color: rgba(255, 255, 255, 0.78);
+        opacity: 1;
+        z-index: var(--trim-box-z);
+      }
+
+      .sheet--back .trim-box {
+        border-color: rgba(13, 27, 42, 0.6);
+        opacity: 1;
         z-index: var(--trim-box-z);
       }
 
@@ -427,26 +435,31 @@
     >Descarregar PSD</a>
   </div>
   <!-- Front -->
-  <section class="sheet sheet--front" aria-label="Cartão de Visita - frente">
-    <div class="front-inner">
-      <div class="brand-block brand-block--visitor-front">
-        <div class="brand-logo">
-          <img
-            src="logo.png"
-            alt="VOA logo"
-            width="220"
-            height="40"
-            decoding="async"
-          />
+  <div class="card-embed-preview-unit">
+    <p class="card-embed-face-tag" aria-hidden="true">Front</p>
+    <section class="sheet sheet--front" aria-label="Cartão de Visita - frente">
+      <div class="front-inner">
+        <div class="brand-block brand-block--visitor-front">
+          <div class="brand-logo">
+            <img
+              src="logo.png"
+              alt="VOA logo"
+              width="220"
+              height="40"
+              decoding="async"
+            />
+          </div>
+          <div class="brand-sub" data-card-field="visitorFront">Beyond simulation.</div>
         </div>
-        <div class="brand-sub" data-card-field="visitorFront">Beyond simulation.</div>
       </div>
-    </div>
-    <div class="trim-box" aria-hidden="true"></div>
-  </section>
+      <div class="trim-box" aria-hidden="true"></div>
+    </section>
+  </div>
 
   <!-- Verso - editar nome, cargo e contactos antes de gerar o PDF -->
-  <section class="sheet sheet--back" aria-label="Cartão de Visita - verso">
+  <div class="card-embed-preview-unit">
+    <p class="card-embed-face-tag" aria-hidden="true">Back</p>
+    <section class="sheet sheet--back" aria-label="Cartão de Visita - verso">
     <div class="back-inner">
       <div>
         <div class="back-top">
@@ -498,6 +511,7 @@
       </div>
     </div>
     <div class="trim-box" aria-hidden="true"></div>
-  </section>
+    </section>
+  </div>
 </body>
 </html>
