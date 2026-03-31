@@ -336,7 +336,7 @@
           <input type="text" id="fld-role" name="role" autocomplete="organization-title" />
         </div>
         <div class="shell-field">
-          <label for="fld-bandUpperName">Nome na faixa (maiúsculas)</label>
+          <label for="fld-bandUpperName">Nome na faixa</label>
           <input type="text" id="fld-bandUpperName" name="bandUpperName" autocomplete="off" />
         </div>
         <div class="shell-field">
@@ -472,8 +472,8 @@
       var DEFAULTS = {
         access: {
           brandSub: "Beyond simulation.",
-          role: "Developer",
-          bandUpperName: "RUI PINTO",
+          role: "CEO",
+          bandUpperName: "Miguel Figueiredo",
           idNumber: "VOA-2026-00000",
           bandSite: "www.voa.aero",
           bandMark: "Cartão de Acesso · não transferível",
@@ -505,11 +505,34 @@
       var accessPhotoInput = document.getElementById("fld-access-photo");
       var accessPhotoClear = document.getElementById("btn-access-photo-clear");
 
+      function migrateAccessLegacyInStore(all) {
+        if (!all || typeof all !== "object") return;
+        var a = all.access;
+        if (!a || typeof a !== "object") return;
+        var dirty = false;
+        if (String(a.role || "").trim() === "Developer") {
+          a.role = DEFAULTS.access.role;
+          dirty = true;
+        }
+        var n = String(a.bandUpperName || "").trim();
+        if (/^rui pinto$/i.test(n)) {
+          a.bandUpperName = DEFAULTS.access.bandUpperName;
+          dirty = true;
+        }
+        if (dirty) {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+          } catch (e) {}
+        }
+      }
+
       function loadAllStored() {
         try {
           var raw = localStorage.getItem(STORAGE_KEY);
           var o = raw ? JSON.parse(raw) : {};
-          return o && typeof o === "object" ? o : {};
+          if (!o || typeof o !== "object") o = {};
+          migrateAccessLegacyInStore(o);
+          return o;
         } catch (e) {
           return {};
         }
