@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VOA.aero - Cartões (pré-visualização)</title>
+  <title>VOA - Cartões (pré-visualização)</title>
   <style>
     :root {
       --bar-h: 52px;
       --navy: #0d1b2a;
       --accent: #00a8ff;
-      /* Painel de medidas: abaixo do header, por cima do iframe, sem empurrar layout */
-      --shell-specs-z: 100;
+      --shell-specs-below-header-gap: 8px;
       --shell-header-z: 10000;
     }
     * { box-sizing: border-box; }
@@ -18,7 +17,7 @@
       margin: 0;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       font-size: 14px;
-      background: #2a3441;
+      background: #1a222c;
       color: #e8eef4;
     }
     .shell-header {
@@ -86,49 +85,126 @@
       background: rgba(255, 255, 255, 0.18);
     }
 
-    /* Texto das medidas sobreposto ao preview: sem fundo; cliques passam ao iframe */
-    .shell-specs-panel {
-      position: fixed;
-      top: var(--bar-h);
-      left: 0;
-      right: 0;
-      z-index: var(--shell-specs-z);
-      padding: 8px 16px 10px;
+    .shell-main {
+      display: flex;
+      flex-direction: row;
+      align-items: stretch;
+      min-height: 100vh;
+      padding-top: var(--bar-h);
+    }
+
+    .shell-left-dock {
+      width: min(320px, 100vw);
+      flex-shrink: 0;
+      background: rgba(18, 24, 32, 0.97);
+      border-right: 1px solid rgba(0, 168, 255, 0.22);
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding: 12px 14px 20px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .shell-specs-block {
+      color: #a8b8c8;
       font-size: 11px;
       line-height: 1.45;
-      color: #c5d4e0;
-      pointer-events: none;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
     .shell-specs-row {
-      display: block;
-      margin: 0;
+      margin: 0 0 4px;
       padding: 0;
     }
-    .shell-specs-row + .shell-specs-row {
-      margin-top: 3px;
+
+    .shell-form-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #7bdbff;
+      margin: 0 0 10px;
+    }
+    .shell-field {
+      margin-bottom: 10px;
+    }
+    .shell-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #c5d4e0;
+      margin-bottom: 4px;
+    }
+    .shell-field input,
+    .shell-field textarea {
+      width: 100%;
+      padding: 7px 9px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(0, 0, 0, 0.35);
+      color: #f0f4f8;
+      font: inherit;
+      font-size: 13px;
+    }
+    .shell-field textarea {
+      min-height: 52px;
+      resize: vertical;
+    }
+    .shell-field input:focus,
+    .shell-field textarea:focus {
+      outline: none;
+      border-color: rgba(0, 168, 255, 0.55);
+      box-shadow: 0 0 0 2px rgba(0, 168, 255, 0.12);
+    }
+    .shell-form-panel[hidden] {
+      display: none !important;
     }
 
     .shell-frame-wrap {
-      padding-top: var(--bar-h);
-      min-height: 100vh;
-    }
-    #preview-frame {
-      position: relative;
-      z-index: 0;
-      width: 100%;
-      height: calc(100vh - var(--bar-h));
-      min-height: 480px;
-      border: 0;
-      display: block;
+      flex: 1;
+      min-width: 0;
+      min-height: calc(100vh - var(--bar-h));
       background: #1a222c;
     }
+    #preview-frame {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: calc(100vh - var(--bar-h));
+      border: 0;
+      background: #1a222c;
+    }
+
+    @media screen and (max-width: 900px) {
+      .shell-main {
+        flex-direction: column;
+      }
+      .shell-left-dock {
+        width: 100%;
+        max-height: 42vh;
+        border-right: 0;
+        border-bottom: 1px solid rgba(0, 168, 255, 0.2);
+      }
+      #preview-frame {
+        min-height: 52vh;
+      }
+    }
+
     @media print {
       .shell-header,
-      .shell-specs-panel {
+      .shell-left-dock {
         display: none !important;
       }
-      .shell-frame-wrap { padding-top: 0; }
-      #preview-frame { height: 100vh; min-height: 100vh; }
+      .shell-main {
+        padding-top: 0;
+      }
+      .shell-frame-wrap {
+        min-height: 100vh;
+      }
+      #preview-frame {
+        min-height: 100vh;
+      }
     }
   </style>
 </head>
@@ -139,12 +215,12 @@
     role="toolbar"
     aria-label="Pré-visualização e exportação"
   >
-    <label>
+    <label for="layout-pick">
       Layout
-      <select id="layout-pick" aria-label="Layout do cartão">
-        <option value="vertical">Acesso - vertical</option>
-        <option value="horizontal">Acesso - horizontal</option>
-        <option value="visitor">Visitante</option>
+      <select id="layout-pick" name="layout" aria-label="Tipo de cartão">
+        <option value="vertical">Cartão de Acesso Vertical</option>
+        <option value="horizontal">Cartão de Acesso Horizontal</option>
+        <option value="visitor">Cartão de Visita</option>
       </select>
     </label>
     <button type="button" id="btn-print">Imprimir</button>
@@ -158,22 +234,88 @@
     >Descarregar PSD</a>
   </header>
 
-  <section
-    class="shell-specs-panel"
-    id="shell-specs-panel"
-    aria-label="Medidas de impressão do layout selecionado"
-    role="region"
-  ></section>
+  <div class="shell-main">
+    <aside class="shell-left-dock" id="shell-left-dock" aria-label="Medidas e dados">
+      <div class="shell-specs-block" id="shell-specs-block" role="region" aria-label="Medidas do layout"></div>
 
-  <div class="shell-frame-wrap">
-    <iframe
-      id="preview-frame"
-      title="Pré-visualização do cartão"
-      src="access-card-vertical.html?embed=1"
-    ></iframe>
+      <h2 class="shell-form-title">Dados no cartão</h2>
+
+      <div class="shell-form-panel" id="shell-form-access" hidden>
+        <div class="shell-field">
+      <label for="fld-brandSub">Slogan (below logo)</label>
+          <input type="text" id="fld-brandSub" name="brandSub" autocomplete="off" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-role">Função / cargo (lado claro)</label>
+          <input type="text" id="fld-role" name="role" autocomplete="organization-title" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-cardName">Nome (lado claro)</label>
+          <input type="text" id="fld-cardName" name="cardName" autocomplete="name" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-bandUpperName">Nome na faixa (maiúsculas)</label>
+          <input type="text" id="fld-bandUpperName" name="bandUpperName" autocomplete="off" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-idNumber">ID / N.º</label>
+          <input type="text" id="fld-idNumber" name="idNumber" autocomplete="off" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-bandSite">Website (texto na faixa)</label>
+          <input type="text" id="fld-bandSite" name="bandSite" autocomplete="off" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-bandMark">Nota na faixa</label>
+          <input type="text" id="fld-bandMark" name="bandMark" autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="shell-form-panel" id="shell-form-visitor" hidden>
+        <div class="shell-field">
+          <label for="fld-visitorFront">Texto da frente</label>
+          <input type="text" id="fld-visitorFront" name="visitorFront" autocomplete="off" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-backName">Nome</label>
+          <input type="text" id="fld-backName" name="backName" autocomplete="name" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-backTitle">Cargo</label>
+          <input type="text" id="fld-backTitle" name="backTitle" autocomplete="organization-title" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-email">Email</label>
+          <input type="email" id="fld-email" name="email" autocomplete="email" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-phone">Telefone</label>
+          <input type="text" id="fld-phone" name="phone" autocomplete="tel" />
+        </div>
+        <div class="shell-field">
+          <label for="fld-address">Morada</label>
+          <textarea id="fld-address" name="address" rows="2" autocomplete="street-address"></textarea>
+        </div>
+        <div class="shell-field">
+          <label for="fld-webUrl">Website (URL ou domínio)</label>
+          <input type="text" id="fld-webUrl" name="webUrl" autocomplete="url" placeholder="https://www.voa.aero" />
+        </div>
+      </div>
+    </aside>
+
+    <div class="shell-frame-wrap">
+      <iframe
+        id="preview-frame"
+        title="Pré-visualização do cartão"
+        src="access-card-vertical.html?embed=1"
+      ></iframe>
+    </div>
   </div>
+
   <script>
     (function () {
+      var STORAGE_KEY = "voa-card-field-values";
+
       var SPEC_ROWS = {
         vertical: [
           "Folha (PDF / @page): 74 × 105,6 mm",
@@ -216,21 +358,199 @@
         },
       };
 
-      var specsPanel = document.getElementById("shell-specs-panel");
+      var DEFAULTS = {
+        access: {
+          brandSub: "Beyond simulation.",
+          role: "Developer",
+          cardName: "Rui Pinto",
+          bandUpperName: "RUI PINTO",
+          idNumber: "VOA-2026-00000",
+          bandSite: "www.voa.aero",
+          bandMark: "Cartão de Acesso · não transferível",
+        },
+        visitor: {
+          visitorFront: "Beyond simulation.",
+          backName: "Miguel Figueiredo",
+          backTitle: "CEO",
+          email: "miguel.figueiredo@voa.aero",
+          phone: "(+351) 227 662 812",
+          address: "R. Narciso Machado 142, 4475-250 Maia, Portugal",
+          webUrl: "https://www.voa.aero",
+        },
+      };
+
+      var specsBlock = document.getElementById("shell-specs-block");
       var pick = document.getElementById("layout-pick");
       var frame = document.getElementById("preview-frame");
       var lnk = document.getElementById("lnk-pdf");
       var lnkPsd = document.getElementById("lnk-psd");
       var btnPrint = document.getElementById("btn-print");
+      var formAccess = document.getElementById("shell-form-access");
+      var formVisitor = document.getElementById("shell-form-visitor");
+
+      var accessInputs = formAccess.querySelectorAll("input");
+      var visitorInputs = formVisitor.querySelectorAll("input, textarea");
+
+      function loadAllStored() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          var o = raw ? JSON.parse(raw) : {};
+          return o && typeof o === "object" ? o : {};
+        } catch (e) {
+          return {};
+        }
+      }
+
+      function saveLayoutFields(layoutKey, fields) {
+        try {
+          var all = loadAllStored();
+          all[layoutKey] = fields;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        } catch (e) {}
+      }
+
+      function getMergedAccess() {
+        var stored = loadAllStored();
+        var base = {};
+        for (var k in DEFAULTS.access) {
+          if (Object.prototype.hasOwnProperty.call(DEFAULTS.access, k)) {
+            base[k] = DEFAULTS.access[k];
+          }
+        }
+        var s = stored.access;
+        if (s && typeof s === "object") {
+          for (var key in s) {
+            if (Object.prototype.hasOwnProperty.call(s, key)) {
+              base[key] = s[key];
+            }
+          }
+        }
+        return base;
+      }
+
+      function saveAccessFields(fields) {
+        try {
+          var all = loadAllStored();
+          all.access = fields;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+        } catch (e) {}
+      }
+
+      function getMergedVisitor() {
+        var stored = loadAllStored();
+        var base = {};
+        for (var k in DEFAULTS.visitor) {
+          if (Object.prototype.hasOwnProperty.call(DEFAULTS.visitor, k)) {
+            base[k] = DEFAULTS.visitor[k];
+          }
+        }
+        var s = stored.visitor;
+        if (s && typeof s === "object") {
+          for (var key in s) {
+            if (Object.prototype.hasOwnProperty.call(s, key)) {
+              base[key] = s[key];
+            }
+          }
+        }
+        return base;
+      }
+
+      function formAccessToObject() {
+        return {
+          brandSub: document.getElementById("fld-brandSub").value,
+          role: document.getElementById("fld-role").value,
+          cardName: document.getElementById("fld-cardName").value,
+          bandUpperName: document.getElementById("fld-bandUpperName").value,
+          idNumber: document.getElementById("fld-idNumber").value,
+          bandSite: document.getElementById("fld-bandSite").value,
+          bandMark: document.getElementById("fld-bandMark").value,
+        };
+      }
+
+      function formVisitorToObject() {
+        return {
+          visitorFront: document.getElementById("fld-visitorFront").value,
+          backName: document.getElementById("fld-backName").value,
+          backTitle: document.getElementById("fld-backTitle").value,
+          email: document.getElementById("fld-email").value,
+          phone: document.getElementById("fld-phone").value,
+          address: document.getElementById("fld-address").value,
+          webUrl: document.getElementById("fld-webUrl").value,
+        };
+      }
+
+      function applyAccessToForm(obj) {
+        document.getElementById("fld-brandSub").value = obj.brandSub || "";
+        document.getElementById("fld-role").value = obj.role || "";
+        document.getElementById("fld-cardName").value = obj.cardName || "";
+        document.getElementById("fld-bandUpperName").value = obj.bandUpperName || "";
+        document.getElementById("fld-idNumber").value = obj.idNumber || "";
+        document.getElementById("fld-bandSite").value = obj.bandSite || "";
+        document.getElementById("fld-bandMark").value = obj.bandMark || "";
+      }
+
+      function applyVisitorToForm(obj) {
+        document.getElementById("fld-visitorFront").value = obj.visitorFront || "";
+        document.getElementById("fld-backName").value = obj.backName || "";
+        document.getElementById("fld-backTitle").value = obj.backTitle || "";
+        document.getElementById("fld-email").value = obj.email || "";
+        document.getElementById("fld-phone").value = obj.phone || "";
+        document.getElementById("fld-address").value = obj.address || "";
+        document.getElementById("fld-webUrl").value = obj.webUrl || "";
+      }
 
       function renderSpecs(key) {
         var rows = SPEC_ROWS[key];
-        specsPanel.textContent = "";
+        specsBlock.textContent = "";
         for (var i = 0; i < rows.length; i++) {
           var row = document.createElement("p");
           row.className = "shell-specs-row";
           row.textContent = rows[i];
-          specsPanel.appendChild(row);
+          specsBlock.appendChild(row);
+        }
+      }
+
+      function pushFieldsToFrame() {
+        var key = pick.value;
+        var fields;
+        if (key === "visitor") {
+          fields = formVisitorToObject();
+        } else {
+          fields = formAccessToObject();
+        }
+        try {
+          if (!frame.contentWindow) return;
+          frame.contentWindow.postMessage(
+            { source: "voa-card-shell", type: "fields-update", fields: fields },
+            "*"
+          );
+        } catch (e) {}
+      }
+
+      var debounceT = null;
+      function schedulePushAndSave() {
+        if (debounceT) clearTimeout(debounceT);
+        debounceT = setTimeout(function () {
+          debounceT = null;
+          var key = pick.value;
+          if (key === "visitor") {
+            saveLayoutFields("visitor", formVisitorToObject());
+          } else {
+            saveAccessFields(formAccessToObject());
+          }
+          pushFieldsToFrame();
+        }, 60);
+      }
+
+      function showFormForLayout(layoutKey) {
+        if (layoutKey === "visitor") {
+          formAccess.hidden = true;
+          formVisitor.hidden = false;
+          applyVisitorToForm(getMergedVisitor());
+        } else {
+          formAccess.hidden = false;
+          formVisitor.hidden = true;
+          applyAccessToForm(getMergedAccess());
         }
       }
 
@@ -242,6 +562,7 @@
       function syncFromUi(pushHistory) {
         var key = pick.value;
         var r = ROUTES[key];
+        showFormForLayout(key);
         frame.src = r.html;
         lnk.href = r.pdf;
         lnk.setAttribute("download", r.pdf);
@@ -258,6 +579,20 @@
       pick.addEventListener("change", function () {
         syncFromUi(true);
       });
+
+      frame.addEventListener("load", function () {
+        setTimeout(pushFieldsToFrame, 0);
+      });
+
+      accessInputs.forEach(function (el) {
+        el.addEventListener("input", schedulePushAndSave);
+        el.addEventListener("change", schedulePushAndSave);
+      });
+      visitorInputs.forEach(function (el) {
+        el.addEventListener("input", schedulePushAndSave);
+        el.addEventListener("change", schedulePushAndSave);
+      });
+
       btnPrint.addEventListener("click", function () {
         try {
           frame.contentWindow.focus();
@@ -268,7 +603,9 @@
       });
 
       applyQueryLayout();
+      showFormForLayout(pick.value);
       syncFromUi(false);
+      setTimeout(pushFieldsToFrame, 400);
     })();
   </script>
 </body>

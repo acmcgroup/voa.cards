@@ -1,5 +1,5 @@
 """
-Gera apenas o PDF do cartão de visitante.
+Gera apenas o PDF do Cartão de Visita.
 
 Preferir: python generate_cards_pdf.py --visitor
 """

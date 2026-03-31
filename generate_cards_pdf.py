@@ -9,8 +9,8 @@ Requer: pip install playwright && playwright install chromium
 
 Uso:
   python generate_cards_pdf.py              # todos
-  python generate_cards_pdf.py --access     # só acesso vertical + horizontal
-  python generate_cards_pdf.py --visitor    # só visitante
+  python generate_cards_pdf.py --access     # só cartões de acesso (vertical + horizontal)
+  python generate_cards_pdf.py --visitor    # só cartão de visita
 """
 from __future__ import annotations
 
@@ -98,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--visitor",
         action="store_true",
-        help="Only visitor card",
+        help="Only business card (cartão de visita)",
     )
     args = parser.parse_args(argv)
     here = Path(__file__).resolve().parent

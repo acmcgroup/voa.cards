@@ -5,7 +5,7 @@
     document.documentElement.classList.toggle("card-embed", /[?&]embed=1(?:&|$)/.test(location.search));
   </script>
   <meta charset="UTF-8" />
-  <title>VOA.aero  -  Cartão de acesso horizontal (impressão)</title>
+  <title>VOA - Cartão de Acesso Horizontal (impressão)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -23,12 +23,16 @@
       --bg: #f7f9fb;
       --white: #ffffff;
       --bleed: 10mm;
+      /* 17 mm da borda da folha = sangria + 7 mm para dentro do corte */
       --edge-inset: 17mm;
       --print-w: 105.6mm;
       --print-h: 74mm;
       --top-rule-h: 2.2mm;
+      --inner-pad-top: calc(var(--edge-inset) - var(--top-rule-h));
       --inner-h: 71.8mm;
       --safe-inner-w: 71.6mm;
+      /* Valor alto + isolamento: PDF/Chromium por vezes empilha mal se .inner também tem z-index */
+      --trim-box-z: 2147483647;
     }
 
     @page {
@@ -77,7 +81,7 @@
       box-sizing: border-box;
       border: 0.12mm dashed rgba(35, 35, 35, 0.5);
       pointer-events: none;
-      z-index: 1;
+      z-index: var(--trim-box-z);
     }
 
     .top-rule {
@@ -102,12 +106,11 @@
 
     .inner {
       position: relative;
-      z-index: 2;
       width: var(--print-w);
       height: var(--inner-h);
       min-height: var(--inner-h);
       max-height: var(--inner-h);
-      padding: 3mm var(--edge-inset) 0;
+      padding: var(--inner-pad-top) var(--edge-inset) var(--edge-inset);
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -143,18 +146,10 @@
 
     .brand-logo img {
       display: block;
-      height: 6mm;
+      height: 5.5mm;
       width: auto;
-      max-width: 44mm;
+      max-width: 40mm;
       object-fit: contain;
-    }
-
-    .brand-tagline {
-      font-size: 1.95mm;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      color: var(--muted);
     }
 
     .brand-sub {
@@ -169,7 +164,7 @@
     }
 
     .role {
-      font-size: 5.2mm;
+      font-size: 4.85mm;
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1.05;
@@ -177,8 +172,8 @@
     }
 
     .card-name {
-      margin-top: 1mm;
-      font-size: 2.85mm;
+      margin-top: 0.85mm;
+      font-size: 2.65mm;
       font-weight: 600;
       letter-spacing: -0.02em;
       line-height: 1.2;
@@ -186,8 +181,8 @@
 
     .photo-wrap {
       flex-shrink: 0;
-      width: 20mm;
-      height: 26.67mm;
+      width: 18mm;
+      height: 24mm;
       border: 0.35mm solid rgba(13, 27, 42, 0.12);
       border-radius: 1mm;
       overflow: hidden;
@@ -195,16 +190,16 @@
     }
 
     .photo-wrap img {
-      width: 20mm;
-      height: 26.67mm;
+      width: 18mm;
+      height: 24mm;
       object-fit: cover;
       object-position: center top;
       display: block;
     }
 
     .photo-placeholder {
-      width: 20mm;
-      height: 26.67mm;
+      width: 18mm;
+      height: 24mm;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -219,7 +214,7 @@
       margin-top: auto;
       margin-left: calc(-1 * var(--edge-inset));
       margin-right: calc(-1 * var(--edge-inset));
-      padding: 2.4mm var(--edge-inset) 2.6mm;
+      padding: 2mm var(--edge-inset) 2mm;
       background: linear-gradient(
         165deg,
         var(--navy) 0%,
@@ -252,7 +247,7 @@
 
     .data-row {
       display: grid;
-      grid-template-columns: 13mm 58.6mm;
+      grid-template-columns: 12mm minmax(0, 1fr);
       align-items: stretch;
       gap: 1.2mm;
       font-size: 2.05mm;
@@ -274,11 +269,11 @@
       color: var(--navy);
       font-weight: 600;
       letter-spacing: 0.01em;
-      padding: 1mm 1.5mm;
+      padding: 0.85mm 1.2mm;
       border-radius: 0.65mm;
       border: 0.2mm solid rgba(0, 168, 255, 0.25);
       box-shadow: 0 0.25mm 0.8mm rgba(0, 0, 0, 0.1);
-      min-height: 4.8mm;
+      min-height: 4.5mm;
       display: flex;
       align-items: center;
       font-size: 1.95mm;
@@ -295,9 +290,9 @@
       flex-direction: row;
       justify-content: space-between;
       align-items: flex-end;
-      gap: 2mm;
-      margin-top: 1.6mm;
-      padding-top: 1.4mm;
+      gap: 1.5mm;
+      margin-top: 1.2mm;
+      padding-top: 1.1mm;
       border-top: 0.25mm solid rgba(255, 255, 255, 0.1);
     }
 
@@ -337,6 +332,7 @@
 
     .sheet--back .trim-box {
       border-color: rgba(255, 255, 255, 0.22);
+      z-index: var(--trim-box-z);
     }
 
     .back-inner {
@@ -355,9 +351,10 @@
 
     .back-logo {
       display: block;
-      height: 11mm;
       width: auto;
-      max-width: 76mm;
+      max-width: 100%;
+      height: auto;
+      max-height: 11mm;
       object-fit: contain;
       object-position: center center;
       filter: drop-shadow(0 0.12mm 0.45mm rgba(0, 0, 0, 0.5))
@@ -393,16 +390,19 @@
 
       .trim-box {
         border-color: rgba(0, 0, 0, 0.4);
+        z-index: var(--trim-box-z);
       }
 
       .sheet--back .trim-box {
         border-color: rgba(255, 255, 255, 0.28);
+        z-index: var(--trim-box-z);
       }
     }
 
     @media screen {
       .trim-box {
         opacity: 0.4;
+        z-index: var(--trim-box-z);
       }
 
       html {
@@ -416,12 +416,13 @@
         padding: 10mm;
         display: flex;
         flex-direction: row;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
         align-items: center;
+        align-content: center;
         justify-content: safe center;
         gap: 8mm;
         box-sizing: border-box;
-        overflow-x: auto;
+        overflow-x: hidden;
       }
 
       .sheet {
@@ -439,10 +440,11 @@
   </style>
   <link rel="stylesheet" href="cards-export.css" />
   <script src="cards-export.js" defer></script>
+  <script src="card-embed-fields.js" defer></script>
 </head>
 <body class="card-export-page">
   <div class="card-export-bar" role="toolbar" aria-label="Exportar">
-    <span class="card-export-title">Cartão de acesso · horizontal</span>
+    <span class="card-export-title">Cartão de Acesso Horizontal</span>
     <button type="button" class="card-export-print">Imprimir</button>
     <a class="card-export-pdf" href="access-card-horizontal-print.pdf" download>Descarregar PDF</a>
     <a
@@ -452,8 +454,7 @@
       title="Gere o ficheiro com: python export_cards_to_psd.py"
     >Descarregar PSD</a>
   </div>
-  <section class="sheet sheet--front" aria-label="Cartão de acesso horizontal  -  frente">
-    <div class="trim-box" aria-hidden="true"></div>
+  <section class="sheet sheet--front" aria-label="Cartão de Acesso Horizontal - frente">
     <div class="top-rule" aria-hidden="true"></div>
     <div class="inner">
       <div class="front-row">
@@ -462,18 +463,17 @@
             <div class="brand-logo">
               <img
                 src="logo.png"
-                alt="VOA.aero"
+                alt="VOA logo"
                 width="160"
                 height="40"
                 decoding="async"
               />
             </div>
-            <div class="brand-tagline">Acesso às instalações</div>
-            <div class="brand-sub">Beyond simulation.</div>
+            <div class="brand-sub" data-card-field="brandSub">Beyond simulation.</div>
           </div>
           <div class="role-block">
-            <div class="role">Developer</div>
-            <div class="card-name">Rui Pinto</div>
+            <div class="role" data-card-field="role">Developer</div>
+            <div class="card-name" data-card-field="cardName">Rui Pinto</div>
           </div>
         </div>
         <div class="photo-wrap" aria-label="Fotografia">
@@ -487,37 +487,34 @@
         <div class="data-grid">
           <div class="data-row">
             <span class="data-label">Nome</span>
-            <span class="data-value">RUI PINTO</span>
+            <span class="data-value" data-card-field="bandUpperName">RUI PINTO</span>
           </div>
           <div class="data-row">
             <span class="data-label">ID / N.º</span>
-            <span class="data-value data-value--mono">VOA-2026-00000</span>
-          </div>
-          <div class="data-row">
-            <span class="data-label">Válido até</span>
-            <span class="data-value">31 de dezembro de 2026</span>
+            <span class="data-value data-value--mono" data-card-field="idNumber">VOA-2026-00000</span>
           </div>
         </div>
         <div class="band-footer">
-          <span class="band-site">www.voa.aero</span>
-          <span class="band-mark">Cartão de acesso · não transferível</span>
+          <span class="band-site" data-card-field="bandSite">www.voa.aero</span>
+          <span class="band-mark" data-card-field="bandMark">Cartão de Acesso · não transferível</span>
         </div>
       </div>
     </div>
+    <div class="trim-box" aria-hidden="true"></div>
   </section>
 
-  <section class="sheet sheet--back" aria-label="Cartão de acesso horizontal  -  verso">
-    <div class="trim-box" aria-hidden="true"></div>
+  <section class="sheet sheet--back" aria-label="Cartão de Acesso Horizontal - verso">
     <div class="back-inner">
       <img
         class="back-logo"
         src="logo.png"
-        alt="VOA.aero"
+        alt="VOA logo"
         width="160"
         height="40"
         decoding="async"
       />
     </div>
+    <div class="trim-box" aria-hidden="true"></div>
   </section>
 </body>
 </html>
