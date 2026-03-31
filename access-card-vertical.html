@@ -17,9 +17,9 @@
     :root {
       --navy: #0d1b2a;
       --navy-footer: #081522;
-      --accent: #00a8ff;
-      --accent-light: #00c8ff;
-      --accent-logo: #5297e9;
+      --accent: #5fa8dc;
+      --accent-light: #89c5ea;
+      --accent-logo: #5fa8dc;
       --muted: #566475;
       --bg: #f7f9fb;
       --white: #ffffff;
@@ -104,7 +104,7 @@
     .brand-block {
       display: flex;
       flex-direction: column;
-      gap: 1mm;
+      gap: 2.75mm;
       align-items: center;
       text-align: center;
     }
@@ -117,10 +117,16 @@
       object-fit: contain;
     }
 
-    .brand-sub {
-      font-size: 1.85mm;
+    /* Tagline igual ao cartão de visita (frente) */
+    .sheet--front .brand-sub {
+      font-size: 3.85mm;
       font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
       color: var(--accent-logo);
+      max-width: 38mm;
+      margin: 0;
+      text-align: center;
     }
 
     .photo-wrap {
@@ -263,7 +269,7 @@
       letter-spacing: 0.01em;
       padding: 0.9mm 1.2mm;
       border-radius: 0.7mm;
-      border: 0.2mm solid rgba(0, 168, 255, 0.25);
+      border: 0.2mm solid rgba(95, 168, 220, 0.25);
       box-shadow: 0 0.25mm 0.8mm rgba(0, 0, 0, 0.1);
       min-height: 4.85mm;
       display: flex;
@@ -313,8 +319,8 @@
       inset: 0;
       z-index: 0;
       background:
-        radial-gradient(ellipse 130% 85% at 100% 0%, rgba(0, 168, 255, 0.28) 0%, transparent 58%),
-        radial-gradient(ellipse 95% 75% at 0% 100%, rgba(0, 200, 255, 0.14) 0%, transparent 52%),
+        radial-gradient(ellipse 130% 85% at 100% 0%, rgba(95, 168, 220, 0.28) 0%, transparent 58%),
+        radial-gradient(ellipse 95% 75% at 0% 100%, rgba(137, 197, 234, 0.14) 0%, transparent 52%),
         radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 65%),
         linear-gradient(155deg, var(--navy) 0%, var(--navy-footer) 100%);
       pointer-events: none;
@@ -349,7 +355,7 @@
       object-fit: contain;
       object-position: center center;
       filter: drop-shadow(0 0.15mm 0.5mm rgba(0, 0, 0, 0.55))
-        drop-shadow(0 0 0.4mm rgba(0, 168, 255, 0.35));
+        drop-shadow(0 0 0.4mm rgba(95, 168, 220, 0.4));
     }
 
     @media print {

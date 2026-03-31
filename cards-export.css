@@ -14,7 +14,7 @@
   color: #e8eef4;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 14px;
-  border-bottom: 1px solid rgba(0, 168, 255, 0.25);
+  border-bottom: 1px solid rgba(95, 168, 220, 0.25);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -31,7 +31,7 @@
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-  background: #00a8ff;
+  background: #5fa8dc;
   color: #0d1b2a;
 }
 

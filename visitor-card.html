@@ -20,9 +20,10 @@
     :root {
       --navy: #0D1B2A;
       --navy-footer: #081522;
-      --accent: #00A8FF;
-      --accent-light: #00C8FF;
-      --accent-logo: #5297e9;
+      /* Brand kit */
+      --accent: #5fa8dc;
+      --accent-light: #89c5ea;
+      --accent-logo: #5fa8dc;
       --muted: #566475;
       --bg: #F7F9FB;
       --white: #ffffff;
@@ -90,8 +91,8 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 130% 85% at 100% 0%, rgba(0, 168, 255, 0.28) 0%, transparent 58%),
-        radial-gradient(ellipse 95% 75% at 0% 100%, rgba(0, 200, 255, 0.14) 0%, transparent 52%),
+        radial-gradient(ellipse 130% 85% at 100% 0%, rgba(95, 168, 220, 0.28) 0%, transparent 58%),
+        radial-gradient(ellipse 95% 75% at 0% 100%, rgba(137, 197, 234, 0.14) 0%, transparent 52%),
         radial-gradient(ellipse 70% 50% at 50% 50%, rgba(255, 255, 255, 0.04) 0%, transparent 65%),
         linear-gradient(155deg, var(--navy) 0%, var(--navy-footer) 100%);
       pointer-events: none;
@@ -109,21 +110,17 @@
       text-align: center;
     }
 
-    .front-inner > div {
+    /* Frente: bloco de marca alinhado com cartões de acesso (logo + tagline) */
+    .brand-block--visitor-front {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       width: 100%;
+      gap: 2.75mm;
     }
 
-    /* Frente escura e verso claro: logo.png */
-    .front-logo {
-      display: block;
-      margin-bottom: 3.5mm;
-    }
-
-    .front-logo img {
+    .brand-block--visitor-front .brand-logo img {
       display: block;
       height: 11mm;
       width: auto;
@@ -133,22 +130,18 @@
       object-fit: contain;
       object-position: center center;
       filter: drop-shadow(0 0.15mm 0.45mm rgba(0, 0, 0, 0.5))
-        drop-shadow(0 0 0.35mm rgba(0, 168, 255, 0.28));
+        drop-shadow(0 0 0.35mm rgba(95, 168, 220, 0.35));
     }
 
-    .front-beyond {
-      font-size: 5.25mm;
-      font-weight: 700;
-      letter-spacing: -0.035em;
-      line-height: 1.2;
-      color: var(--white);
-      max-width: 72mm;
-      margin: 0 auto;
-      text-align: center;
-    }
-
-    .front-beyond-highlight {
+    .brand-block--visitor-front .brand-sub {
+      font-size: 3.85mm;
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.25;
       color: var(--accent-logo);
+      max-width: 72mm;
+      margin: 0;
+      text-align: center;
     }
 
     /* Back: solid white (no background gradients) */
@@ -272,7 +265,7 @@
       );
       border-radius: 0.65mm;
       margin: 2.5mm 0 2.25mm;
-      box-shadow: 0 0.35mm 1.2mm rgba(0, 168, 255, 0.15);
+      box-shadow: 0 0.35mm 1.2mm rgba(95, 168, 220, 0.15);
     }
 
     /* Espaço entre cabeçalho (foto + nome) e linha do email em diante */
@@ -436,8 +429,8 @@
   <!-- Front -->
   <section class="sheet sheet--front" aria-label="Cartão de Visita - frente">
     <div class="front-inner">
-      <div>
-        <div class="front-logo">
+      <div class="brand-block brand-block--visitor-front">
+        <div class="brand-logo">
           <img
             src="logo.png"
             alt="VOA logo"
@@ -446,7 +439,7 @@
             decoding="async"
           />
         </div>
-        <p class="front-beyond"><span class="front-beyond-highlight" data-card-field="visitorFront">Beyond simulation.</span></p>
+        <div class="brand-sub" data-card-field="visitorFront">Beyond simulation.</div>
       </div>
     </div>
     <div class="trim-box" aria-hidden="true"></div>
