@@ -9,8 +9,9 @@
       --bar-h: 52px;
       --navy: #0d1b2a;
       --accent: #00a8ff;
-      --shell-specs-below-header-gap: 8px;
       --shell-header-z: 10000;
+      /* Coluna da pré-visualização: azul-cinza claro, ligeiramente mais escuro que branco-de-neve */
+      --shell-preview-bg: #a6bbd4;
     }
     * { box-sizing: border-box; }
     body {
@@ -43,10 +44,11 @@
       flex-wrap: wrap;
       gap: 10px 16px;
       min-width: 0;
+      margin-left: auto;
+      justify-content: flex-end;
     }
     .shell-header-brand {
       flex-shrink: 0;
-      margin-left: auto;
       line-height: 0;
       opacity: 0.95;
     }
@@ -59,7 +61,7 @@
       width: auto;
       max-width: 140px;
       object-fit: contain;
-      object-position: right center;
+      object-position: left center;
     }
     .shell-header label {
       display: inline-flex;
@@ -79,21 +81,9 @@
       background: var(--navy);
       color: #fff;
     }
-    .shell-header button {
-      padding: 8px 14px;
-      border-radius: 6px;
-      border: none;
-      font: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--accent);
-      color: #0d1b2a;
-    }
-    .shell-header button:hover {
-      filter: brightness(1.08);
-    }
     .shell-header a.shell-pdf,
-    .shell-header a.shell-psd {
+    .shell-header a.shell-psd,
+    .shell-header button.shell-print {
       display: inline-flex;
       align-items: center;
       padding: 8px 14px;
@@ -105,8 +95,13 @@
       background: rgba(255, 255, 255, 0.12);
       border: 1px solid rgba(255, 255, 255, 0.2);
     }
+    .shell-header button.shell-print {
+      cursor: pointer;
+      font-family: inherit;
+    }
     .shell-header a.shell-pdf:hover,
-    .shell-header a.shell-psd:hover {
+    .shell-header a.shell-psd:hover,
+    .shell-header button.shell-print:hover {
       background: rgba(255, 255, 255, 0.18);
     }
 
@@ -130,17 +125,24 @@
       line-height: 1.4;
     }
 
+    .shell-specs-bar {
+      flex-shrink: 0;
+      padding: 10px 14px 9px;
+    }
     .shell-specs-block {
-      color: #a8b8c8;
       font-size: 11px;
       line-height: 1.45;
-      margin-bottom: 14px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin: 0;
+      padding: 0;
+      border: 0;
+      color: #4a5568;
     }
     .shell-specs-row {
-      margin: 0 0 4px;
+      margin: 0 0 3px;
       padding: 0;
+    }
+    .shell-specs-row:last-child {
+      margin-bottom: 0;
     }
 
     .shell-form-title {
@@ -148,7 +150,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
-      color: #7bdbff;
+      color: #a8b4c4;
       margin: 0 0 10px;
     }
     .shell-field {
@@ -216,15 +218,18 @@
       flex: 1;
       min-width: 0;
       min-height: calc(100vh - var(--bar-h));
-      background: #1a222c;
+      background: var(--shell-preview-bg);
+      display: flex;
+      flex-direction: column;
     }
     #preview-frame {
       display: block;
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
       width: 100%;
-      height: 100%;
-      min-height: calc(100vh - var(--bar-h));
       border: 0;
-      background: #1a222c;
+      background: transparent;
     }
 
     @media screen and (max-width: 900px) {
@@ -238,13 +243,15 @@
         border-bottom: 1px solid rgba(0, 168, 255, 0.2);
       }
       #preview-frame {
-        min-height: 52vh;
+        flex: 1;
+        min-height: 40vh;
       }
     }
 
     @media print {
       .shell-header,
-      .shell-left-dock {
+      .shell-left-dock,
+      .shell-specs-bar {
         display: none !important;
       }
       .shell-main {
@@ -266,25 +273,6 @@
     role="toolbar"
     aria-label="Pré-visualização e exportação"
   >
-    <div class="shell-header-tools">
-      <label for="layout-pick">
-        Layout
-        <select id="layout-pick" name="layout" aria-label="Tipo de cartão">
-          <option value="vertical">Cartão de Acesso Vertical</option>
-          <option value="horizontal">Cartão de Acesso Horizontal</option>
-          <option value="visitor">Cartão de Visita</option>
-        </select>
-      </label>
-      <button type="button" id="btn-print">Imprimir</button>
-      <a class="shell-pdf" id="lnk-pdf" href="access-card-vertical-print.pdf" download>Descarregar PDF</a>
-      <a
-        class="shell-psd"
-        id="lnk-psd"
-        href="access-card-vertical-300dpi.psd"
-        download
-        title="Gere o ficheiro com: python export_cards_to_psd.py"
-      >Descarregar PSD</a>
-    </div>
     <a
       class="shell-header-brand"
       href="https://www.voa.aero"
@@ -294,12 +282,29 @@
     >
       <img src="logo.png" alt="VOA" width="160" height="40" decoding="async" />
     </a>
+    <div class="shell-header-tools">
+      <label for="layout-pick">
+        Layout
+        <select id="layout-pick" name="layout" aria-label="Tipo de cartão">
+          <option value="vertical">Cartão de Acesso Vertical</option>
+          <option value="horizontal">Cartão de Acesso Horizontal</option>
+          <option value="visitor">Cartão de Visita</option>
+        </select>
+      </label>
+      <button type="button" id="btn-print" class="shell-print">Imprimir</button>
+      <a class="shell-pdf" id="lnk-pdf" href="access-card-vertical-print.pdf" download>Descarregar PDF</a>
+      <a
+        class="shell-psd"
+        id="lnk-psd"
+        href="access-card-vertical-300dpi.psd"
+        download
+        title="Gere o ficheiro com: python export_cards_to_psd.py"
+      >Descarregar PSD</a>
+    </div>
   </header>
 
   <div class="shell-main">
-    <aside class="shell-left-dock" id="shell-left-dock" aria-label="Medidas e dados">
-      <div class="shell-specs-block" id="shell-specs-block" role="region" aria-label="Medidas do layout"></div>
-
+    <aside class="shell-left-dock" id="shell-left-dock" aria-label="Dados do cartão">
       <h2 class="shell-form-title">Dados no cartão</h2>
 
       <div class="shell-form-panel" id="shell-form-access" hidden>
@@ -382,6 +387,14 @@
     </aside>
 
     <div class="shell-frame-wrap">
+      <div
+        class="shell-specs-bar"
+        id="shell-specs-bar"
+        role="region"
+        aria-label="Medidas do layout"
+      >
+        <div class="shell-specs-block" id="shell-specs-block"></div>
+      </div>
       <iframe
         id="preview-frame"
         title="Pré-visualização do cartão"

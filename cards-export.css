@@ -74,6 +74,12 @@ html.card-embed .card-export-bar {
   html.card-embed body.card-export-page {
     padding-top: 0 !important;
   }
+
+  /* Pré-visualização no index: sem cor própria — vê-se o fundo da página pai */
+  html.card-embed,
+  html.card-embed body {
+    background: transparent !important;
+  }
 }
 
 @media print {
