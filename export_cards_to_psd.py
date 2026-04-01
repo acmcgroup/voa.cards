@@ -29,6 +29,7 @@ except ImportError:
     sync_playwright = None  # type: ignore
 
 from pytoshop import enums
+from pytoshop.image_data import ImageData
 from pytoshop.layers import ChannelImageData
 from pytoshop.user.nested_layers import Group, Image as PsdImage, nested_layers_to_psd
 
@@ -210,12 +211,21 @@ def _build_psd(
         Group(name="Back", closed=False, layers=back_layers),
     ]
 
+    # nested_layers_to_psd(..., size=) is (width, height); (h, w) swapped the canvas.
     psd = nested_layers_to_psd(
         root,
         enums.ColorMode.rgb,
-        size=(h, w),
+        size=(w, h),
         compression=enums.Compression.raw,
     )
+    # Default merged image is scalar 0 (black); many viewers only show that. Fill with PDF page 2 (lighter face).
+    comp = np.ascontiguousarray(
+        np.stack(
+            [back_rgb[:, :, 0], back_rgb[:, :, 1], back_rgb[:, :, 2]],
+            axis=0,
+        )
+    )
+    psd.image_data = ImageData(channels=comp, compression=enums.Compression.raw)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, "wb") as f:
         psd.write(f)
