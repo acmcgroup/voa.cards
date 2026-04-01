@@ -7,6 +7,9 @@ Por ficheiro:
   · Camada "Print  -  composite 300dpi"  -  raster igual ao PDF
   · (Só access cards) "Asset  -  logo.png"  -  logótipo posicionado para editar independentemente
 
+Documento PSD em faixa vertical 2× altura (face 1 em cima, face 2 em baixo), para ambas
+serem visíveis ao mesmo tempo; não sobrepor no mesmo rectângulo.
+
 Requer: playwright, pymupdf (fitz), pillow, pytoshop
 
 Uso:
@@ -112,7 +115,9 @@ def _guides_rgba(h: int, w: int, bleed: int) -> np.ndarray:
     return np.array(im)
 
 
-def _rgba_to_psd_image(name: str, rgba: np.ndarray) -> PsdImage:
+def _rgba_to_psd_image(
+    name: str, rgba: np.ndarray, top: int = 0, left: int = 0
+) -> PsdImage:
     h, w, _ = rgba.shape
     r = rgba[:, :, 0].astype(np.uint8, copy=False)
     g = rgba[:, :, 1].astype(np.uint8, copy=False)
@@ -126,15 +131,17 @@ def _rgba_to_psd_image(name: str, rgba: np.ndarray) -> PsdImage:
     }
     return PsdImage(
         name=name,
-        top=0,
-        left=0,
-        bottom=h,
-        right=w,
+        top=top,
+        left=left,
+        bottom=top + h,
+        right=left + w,
         channels=ch,
     )
 
 
-def _rgb_to_psd_image(name: str, rgb: np.ndarray) -> PsdImage:
+def _rgb_to_psd_image(
+    name: str, rgb: np.ndarray, top: int = 0, left: int = 0
+) -> PsdImage:
     h, w, _ = rgb.shape
     r = np.ascontiguousarray(rgb[:, :, 0])
     g = np.ascontiguousarray(rgb[:, :, 1])
@@ -146,7 +153,14 @@ def _rgb_to_psd_image(name: str, rgb: np.ndarray) -> PsdImage:
         enums.ChannelId.blue: ChannelImageData(b),
         enums.ChannelId.transparency: ChannelImageData(t),
     }
-    return PsdImage(name=name, top=0, left=0, bottom=h, right=w, channels=ch)
+    return PsdImage(
+        name=name,
+        top=top,
+        left=left,
+        bottom=top + h,
+        right=left + w,
+        channels=ch,
+    )
 
 
 def _logo_layer_vertical(w: int, h: int) -> PsdImage | None:
@@ -191,18 +205,23 @@ def _build_psd(
 ) -> None:
     h, w, _ = front_rgb.shape
     bleed = bleed_px()
-    guides = _guides_rgba(h, w, bleed)
+    guides_px = np.array(_guides_rgba(h, w, bleed))
+
+    # Face PDF 1 em Y∈[0,h), face PDF 2 em Y∈[h,2h) — mesma largura; evita sobreposição no PSD.
+    y1 = h
 
     front_layers: list = []
     extra = logo_layer_fn(w, h)
     if extra is not None:
         front_layers.append(extra)
-    front_layers.append(_rgb_to_psd_image("Print  -  composite 300dpi", front_rgb))
-    front_layers.append(_rgba_to_psd_image("Guides  -  trim (10mm bleed)", guides))
+    front_layers.append(_rgb_to_psd_image("Print  -  composite 300dpi", front_rgb, 0, 0))
+    front_layers.append(
+        _rgba_to_psd_image("Guides  -  trim (10mm bleed)", guides_px, 0, 0)
+    )
 
     back_layers = [
-        _rgb_to_psd_image("Print  -  composite 300dpi", back_rgb),
-        _rgba_to_psd_image("Guides  -  trim (10mm bleed)", np.array(_guides_rgba(h, w, bleed))),
+        _rgb_to_psd_image("Print  -  composite 300dpi", back_rgb, y1, 0),
+        _rgba_to_psd_image("Guides  -  trim (10mm bleed)", guides_px, y1, 0),
     ]
 
     # Ordem: capa (frente) primeiro, informação (verso) a seguir — alinhado ao HTML e ao PDF
@@ -211,17 +230,17 @@ def _build_psd(
         Group(name="Back", closed=False, layers=back_layers),
     ]
 
-    # nested_layers_to_psd(..., size=) is (width, height); (h, w) swapped the canvas.
+    # nested_layers_to_psd(..., size=) is (width, height); canvas = duas faces em coluna.
     psd = nested_layers_to_psd(
         root,
         enums.ColorMode.rgb,
-        size=(w, h),
+        size=(w, 2 * h),
         compression=enums.Compression.raw,
     )
-    # Default merged image is scalar 0 (black); many viewers only show that. Fill with PDF page 2 (lighter face).
+    duplex = np.ascontiguousarray(np.vstack((front_rgb, back_rgb)))
     comp = np.ascontiguousarray(
         np.stack(
-            [back_rgb[:, :, 0], back_rgb[:, :, 1], back_rgb[:, :, 2]],
+            [duplex[:, :, 0], duplex[:, :, 1], duplex[:, :, 2]],
             axis=0,
         )
     )
