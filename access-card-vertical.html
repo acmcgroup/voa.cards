@@ -227,29 +227,12 @@
       margin-left: calc(-1 * var(--edge-inset));
       margin-right: calc(-1 * var(--edge-inset));
       padding: 2.2mm var(--edge-inset) 2.4mm;
-      background: linear-gradient(
-        165deg,
-        var(--navy) 0%,
-        var(--navy-footer) 55%,
-        #0a1520 100%
-      );
+      /* Marine blue — same as deck front slide / site tokens (--navy #0D1B2A) */
+      background: var(--navy);
       position: relative;
-    }
-
-    .data-band::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 0.4mm;
-      background: linear-gradient(
-        90deg,
-        var(--accent-light) 0%,
-        var(--accent) 40%,
-        transparent 88%
-      );
-      opacity: 0.9;
+      color: var(--white);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     .data-grid {
@@ -269,7 +252,7 @@
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      color: rgba(255, 255, 255, 0.5);
+      color: var(--white);
       display: flex;
       align-items: center;
       padding: 0.6mm 0;
@@ -277,14 +260,14 @@
     }
 
     .data-value {
-      background: rgba(255, 255, 255, 0.97);
-      color: var(--navy);
+      background: transparent;
+      color: var(--white);
       font-weight: 600;
       letter-spacing: 0.01em;
-      padding: 0.9mm 1.2mm;
-      border-radius: 0.7mm;
-      border: 0.2mm solid rgba(95, 168, 220, 0.25);
-      box-shadow: 0 0.25mm 0.8mm rgba(0, 0, 0, 0.1);
+      padding: 0.9mm 0;
+      border-radius: 0;
+      border: none;
+      box-shadow: none;
       min-height: 4.85mm;
       display: flex;
       align-items: center;
@@ -304,19 +287,19 @@
       gap: 0.65mm;
       margin-top: 1.4mm;
       padding-top: 1.2mm;
-      border-top: 0.25mm solid rgba(255, 255, 255, 0.1);
+      border-top: 0.25mm solid rgba(255, 255, 255, 0.35);
     }
 
     .band-site {
       font-size: 2.15mm;
       font-weight: 600;
-      color: var(--accent-light);
+      color: var(--white);
       letter-spacing: 0.03em;
     }
 
     .band-mark {
       font-size: 1.75mm;
-      color: rgba(255, 255, 255, 0.38);
+      color: var(--white);
       font-weight: 500;
       line-height: 1.3;
     }
